@@ -81,9 +81,6 @@ class   Describe():
         # Gets features with numeric values
         df_to_stats = self.df.select_dtypes(include=['float', 'int'])
 
-        if df_to_stats.empty:
-            print("No numeric values in data")
-            return
         count, mean, std, min, max, pq1, pq2, pq3, index = [], [], [], [], [], [], [], [], []
 
 
@@ -91,7 +88,6 @@ class   Describe():
             index.append(feature)
             # remove nan values
             clean_df = df_to_stats[feature].dropna().astype(float)
-            print(type(clean_df))
 
             # if there are no valid values
             if clean_df.__len__() == 0:
@@ -141,4 +137,9 @@ class   Describe():
 
         self.result = pd.concat([df_count, df_mean, df_std, df_min, df_pq1, df_pq2, df_pq3, df_max])
         self.result = self.result.astype(float).round(6)
-        print(self.result)
+
+    def print(self):
+        if self.result.empty:
+            print("No numeric values in data")
+        else:
+            print(self.result)

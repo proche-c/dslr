@@ -20,4 +20,4 @@ if __name__ == "__main__":
     signal.signal(signal.SIGTERM, termination_handler)
     args = arguments_configuration()
     df = read_file(args.filename)
-    histogram(df, args)
+    histogram(df)

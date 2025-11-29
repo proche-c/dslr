@@ -68,5 +68,6 @@ if __name__ == "__main__":
     file_path = os.path.abspath(args.filename)
     data = read_file(file_path)
     d = Describe(data)
+    d.print()
     if args.test:
         test_describe(data)
