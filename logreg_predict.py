@@ -3,7 +3,7 @@ import signal
 import os
 from utils.utils import termination_handler, read_file
 from logistic_regression.predict import Predict
-from test.test import compare_models
+from test.prediction import compare_models
 
 def arguments_configuration():
     parser = argparse.ArgumentParser(

@@ -4,6 +4,50 @@ import sys
 # FALTA AÑADIR LOS PARAMETROIS DE DESCRIBE1º
 
 class   Describe():
+    """
+    The Describe class provides a manual implementation of a statistical summary
+    tool for numerical features in a pandas DataFrame. It reproduces the behavior
+    of the classic "describe" function without relying on any built-in methods
+    that automatically compute statistics (such as mean, std, min, max, or
+    describe()).
+
+    This class computes the following statistics for each numeric column:
+        - Count: Number of non-NaN values.
+        - Mean: Arithmetic average of the values.
+        - Standard Deviation (std): Sample standard deviation computed manually.
+        - Min / Max: Minimum and maximum values obtained by iterating through the data.
+        - 25%, 50%, 75% percentiles: Quartiles computed using a custom percentile
+          function with linear interpolation.
+
+    Steps performed:
+        1. Select numerical columns from the input DataFrame.
+        2. Remove NaN values and convert data to float.
+        3. Manually compute each statistic without using forbidden library functions.
+        4. Assemble the results into a pandas DataFrame for formatted output.
+
+    Attributes:
+        df (DataFrame): The original input dataset.
+        result (DataFrame): A DataFrame containing all computed statistics.
+
+    Methods:
+        get_min_max(clean_df):
+            Computes the minimum and maximum values of a cleaned numerical series.
+
+        percentile(data, percent):
+            Computes a percentile value using sorted data and linear interpolation.
+
+        get_stats():
+            Calculates all required statistics for each numeric feature and stores
+            them in the `result` attribute.
+
+        print():
+            Displays the computed statistics table.
+
+    Usage Example:
+        df = pd.read_csv("dataset_train.csv")
+        desc = Describe(df)
+        desc.print()
+    """
     def __init__(self, data: pd.DataFrame):
         self.pq1 = 0.25
         self.pq2 = 0.5
@@ -37,6 +81,9 @@ class   Describe():
         # Gets features with numeric values
         df_to_stats = self.df.select_dtypes(include=['float', 'int'])
 
+        if df_to_stats.empty:
+            print("No numeric values in data")
+            return
         count, mean, std, min, max, pq1, pq2, pq3, index = [], [], [], [], [], [], [], [], []
 
 
@@ -44,6 +91,7 @@ class   Describe():
             index.append(feature)
             # remove nan values
             clean_df = df_to_stats[feature].dropna().astype(float)
+            print(type(clean_df))
 
             # if there are no valid values
             if clean_df.__len__() == 0:
@@ -64,11 +112,12 @@ class   Describe():
             mean.append(clean_df.sum() / clean_df.__len__())
 
             # Std
-            r = []
-            for item in clean_df:
-                r.append((item - (clean_df.sum() / clean_df.__len__())) ** 2)
-            s = (sum(r) / (clean_df.__len__() - 1)) ** 0.5
-            std.append(s)
+            if clean_df.__len__() == 1:
+                std.append(0.0)
+            else:
+                r = (clean_df - (clean_df.sum() / clean_df.__len__())) ** 2
+                s = (r.sum() / (clean_df.__len__() - 1)) ** 0.5
+                std.append(s)
 
             # Min, max
             number_min, number_max = self.get_min_max(clean_df)
@@ -91,7 +140,5 @@ class   Describe():
         df_max = pd.DataFrame(max, index=index, columns=[stats_names[7]]).transpose()
 
         self.result = pd.concat([df_count, df_mean, df_std, df_min, df_pq1, df_pq2, df_pq3, df_max])
-        # print(self.result)
-
-    def print(self):
+        self.result = self.result.astype(float).round(6)
         print(self.result)
