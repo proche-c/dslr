@@ -78,11 +78,17 @@ def calculate_homogeneity(df:pd.DataFrame):
     between houses. Lower variance = higher homogeneity.
     """
     group_means = {}
+    variance = 0
+    variances = {}
+    feature_homogeneity = ''
 
     try:
         for house, group in df.groupby(config.target_label):
             d = Describe(group)
             group_means[house] = d.result.loc['mean']
+    except KeyError:
+        print(f"Target label '{config.target_label}' not found in dataset. Check input file and config.")
+        exit(1)
     except Exception as e:
         print(f"An exception type {type(e).__name__} has ocurred at plots.histogram trying to obtain the df_means ")
         exit(1)
@@ -91,10 +97,6 @@ def calculate_homogeneity(df:pd.DataFrame):
     if df_means.empty:
         return {}, None
 
-    variance = 0
-    variances = {}
-    feature_homogeneity = ''
-
     for feature in df_means.columns:
         global_mean = df_means[feature].sum() / len(group_means)
         df_means[f'{feature}_diff'] = (df_means[feature] - global_mean) ** 2
@@ -102,6 +104,7 @@ def calculate_homogeneity(df:pd.DataFrame):
         variances[feature] = current_variance
         if feature == df_means.columns[0]:
             variance = current_variance
+            feature_homogeneity = feature
         else:
             if current_variance < variance:
                 variance = current_variance
@@ -121,7 +124,7 @@ def histogram(df: pd.DataFrame):
         Dataset containing features and target label.
     """
     variances, feature = calculate_homogeneity(df)
-    if len(variances) == 0:
+    if not variances or not feature:
         print("No numeric values in data")
     else:
         print_variances_between_means(variances)

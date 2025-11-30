@@ -21,12 +21,16 @@ def termination_handler(signum, frame):
      
 def get_mean(ds:pd.Series):
     valid = ds.dropna()
-    return valid.sum() / valid.__len__()
+    if len(valid) == 0:
+        return 0
+    return valid.sum() / len(valid)
 
 def get_std(ds:pd.Series, mean):
     valid = ds.dropna()
     diff_squared = (valid - mean) ** 2
-    return (diff_squared.sum() / valid.__len__()) ** 0.5
+    if len(valid) == 0:
+        return 0
+    return (diff_squared.sum() / len(valid)) ** 0.5
 
 def standarize(ds:pd.Series, mean, std):
     return (ds - mean) / std
@@ -38,6 +42,5 @@ def print_variances_between_means(variances_between_means:dict):
 
 def print_pearsons(pearsons:list):
     print("Pearsons")
-    print(pearsons.sort())
     for item in pearsons:
         print(f'{item[0]} and {item[1]}: {item[2]}')
