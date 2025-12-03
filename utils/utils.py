@@ -32,8 +32,8 @@ def get_std(ds:pd.Series, mean):
         return 0
     return (diff_squared.sum() / len(valid)) ** 0.5
 
-def standarize(ds:pd.Series, mean, std):
-    return (ds - mean) / std
+def standarize(ds: pd.Series, mean, std):
+    return (ds - mean) / std if std != 0 else pd.Series(0, index=ds.index)
 
 def print_variances_between_means(variances_between_means:dict):
     print("Variances between means:")

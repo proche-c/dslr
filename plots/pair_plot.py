@@ -104,14 +104,14 @@ def pair_plot(df:pd.DataFrame):
        return
     
     try:
-        features_and_house = ['hola'] + [col for col in df.columns if df[col].dtype in ['float64', 'int64']]
+        features_and_house = [config.target_label] + [col for col in df.columns if df[col].dtype in ['float64', 'int64']]
+        df = df[features_and_house].dropna().astype(float, errors='ignore')
     except KeyError:
         print(f"Target label '{config.target_label}' not found in dataset. Check input file and config.")
+        exit(1)
     except Exception as e:
         print(f"An exception type {type(e).__name__} has ocurred at plots.histogram trying to obtain the df_means ")
         exit(1)
-        
-    df = df[features_and_house].dropna().astype(float, errors='ignore')
 
     if df.empty:
         print("No numeric values in data")
@@ -130,8 +130,3 @@ def pair_plot(df:pd.DataFrame):
     )
     plt.show()
 
-
-# Choosen features:
-#   - Astronomy
-#   - Ancient runes
-#   - Charms
