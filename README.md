@@ -53,4 +53,15 @@ All parsing, numerical processing, and statistical computations are written from
 
 The Describe tool helps identify potential data quality issues—including missing values, outliers, and skewed distributions—and serves as an essential initial step before proceeding with visualization, standardization, and model training.  
 
+```bash
+python3 describe.py <path_to_dataset>
+```
+
+In addition, the tool provides an optional --test mode that compares the output of the custom Describe class with the results produced by pandas.DataFrame.describe().
+This feature allows you to validate the correctness and numerical stability of the manual implementation against a trusted reference:
+
+```bash
+python3 describe.py <path_to_dataset> --test
+```
+
 
