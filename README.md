@@ -54,14 +54,112 @@ All parsing, numerical processing, and statistical computations are written from
 The Describe tool helps identify potential data quality issues—including missing values, outliers, and skewed distributions—and serves as an essential initial step before proceeding with visualization, standardization, and model training.  
 
 ```bash
-python3 describe.py <path_to_dataset>
+python3 describe.py <path_to_train_dataset>
 ```
 
 In addition, the tool provides an optional --test mode that compares the output of the custom Describe class with the results produced by pandas.DataFrame.describe().
 This feature allows you to validate the correctness and numerical stability of the manual implementation against a trusted reference:
 
 ```bash
-python3 describe.py <path_to_dataset> --test
+python3 describe.py <path_to_train_dataset> --test
+```
+
+## Data Visualization
+
+The project includes a set of visualization tools designed to explore relationships, distributions, and structural patterns within the Hogwarts dataset.
+All visualizations are generated using Matplotlib and Seaborn, but every statistical computation (means, variances, correlations, standardization…) is implemented manually, in accordance with project requirements.
+
+These tools provide insight into:
+
+- Feature homogeneity across Hogwarts houses
+
+- Inter-feature correlations
+
+- Feature distributions
+
+- Overall structure of the dataset
+
+- Potential relationships useful for training the logistic regression model
+
+Each visualization module is executed via a standalone script that takes the dataset path as its main argument.  
+
+### Histogram Analysis
+
+This visualization identifies the most homogeneous feature, meaning the feature whose mean value changes the least between Hogwarts houses.
+
+**How it works**
+
+1. Computes the mean of each feature per house using the custom Describe class.
+
+2. Calculates the variance between group means (inter-group variance).
+
+3. Selects the feature with the lowest variance (most homogeneous).
+
+4. Displays:
+
+   - A message with variances of all features.
+
+   - Two histograms of the selected feature:
+
+      - A Matplotlib overlay with custom colors per house
+
+      - A Seaborn histogram with hue separation
+
+**Usage**  
+
+```bash
+python3 histogram.py <path_to_train_dataset>
+```
+
+## Scatter Plot Analysis
+
+The scatter plot tool identifies the two features with the strongest Pearson correlation (positive or negative), computed manually.
+
+**How it works**
+
+1. Selects all numeric columns.
+
+2. Computes Pearson correlation manually for every unique feature pair.
+
+3. Identifies the pair with the strongest absolute correlation.
+
+4. Generates two scatter plots:
+
+   - Raw values
+
+   - Manually standardized values (z-score)
+
+**Usage**  
+
+```bash
+python3 scatter_plot.py <path_to_train_dataset>
+```
+
+## Pair Plot Analysis
+
+This tool provides a broad overview of numeric features by combining results from homogeneity and correlation analysis, and generating a Seaborn pairplot.
+
+**How it works**
+
+1. Computes:
+
+   - Variance between house means (homogeneity)
+
+   - Pearson correlations between all numeric feature pairs
+
+2. Prints:
+
+   - Strongly correlated pairs (|pearson| ≥ 0.8)
+
+
+   - Features with very low variance between means (≤ 50)
+
+3. Creates a pairplot of all numeric features, colored by house.
+
+**Usage**  
+
+```bash
+python3 pair_plot.py <path_to_train_dataset>
 ```
 
 
