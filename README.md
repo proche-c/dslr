@@ -235,6 +235,8 @@ Run the training script:
 pipenv run python3 logreg_train.py <path_to_train_dataset>
 ```
 
+Optional hyperparameters:
+
 | Parameter                  | Default | Purpose                  |
 | -------------------------- | ------- | ------------------------ |
 | `--max_steps` / `-ms`      | 15000   | Maximum GD iterations    |
@@ -244,8 +246,46 @@ pipenv run python3 logreg_train.py <path_to_train_dataset>
 Example:  
 
 ```bash
-pipenv run python logreg_train.py <path_to_train_dataset> --lr 0.005 -ms 20000
+pipenv run python3 logreg_train.py <path_to_train_dataset> --lr 0.005 -ms 20000
 ```
 
+This generates:
+
+- weights.json — all θ parameters, means, stds
+
+- a cost plot showing convergence for all four houses
+
+
+### **Predicting Houses**
+
+Run the prediction script:
+
+```bash  
+pipenv run python3 logreg_predict.py <path_to_test_dataset>
+```
+
+This generates:
+
+- houses.csv — predicted house for each student.
+
+Optional arguments:
+
+| Flag            | Meaning                         |
+| --------------- | ------------------------------- |
+| `--jsonpath`    | custom path to weights.json     |
+| `--train_file`  | training file used when testing |
+| `--test` / `-t` | compare with sklearn            |
+
+Example comparing both models:
+
+```bash
+pipenv run python3 logreg_predict.py <path_to_test_dataset> --test
+```
+
+Outputs:
+
+- houses.csv  
+- compare.csv (manual vs sklearn)  
+- prints discrepancies
 
 
