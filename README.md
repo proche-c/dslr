@@ -54,14 +54,14 @@ All parsing, numerical processing, and statistical computations are written from
 The Describe tool helps identify potential data quality issues—including missing values, outliers, and skewed distributions—and serves as an essential initial step before proceeding with visualization, standardization, and model training.  
 
 ```bash
-python3 describe.py <path_to_train_dataset>
+pipenv run python3 describe.py <path_to_train_dataset>
 ```
 
 In addition, the tool provides an optional --test mode that compares the output of the custom Describe class with the results produced by pandas.DataFrame.describe().
 This feature allows you to validate the correctness and numerical stability of the manual implementation against a trusted reference:
 
 ```bash
-python3 describe.py <path_to_train_dataset> --test
+pipenv run python3 describe.py <path_to_train_dataset> --test
 ```
 
 ## Data Visualization
@@ -108,10 +108,10 @@ This visualization identifies the most homogeneous feature, meaning the feature 
 **Usage**  
 
 ```bash
-python3 histogram.py <path_to_train_dataset>
+pipenv run python3 histogram.py <path_to_train_dataset>
 ```
 
-## Scatter Plot Analysis
+### Scatter Plot Analysis
 
 The scatter plot tool identifies the two features with the strongest Pearson correlation (positive or negative), computed manually.
 
@@ -132,10 +132,10 @@ The scatter plot tool identifies the two features with the strongest Pearson cor
 **Usage**  
 
 ```bash
-python3 scatter_plot.py <path_to_train_dataset>
+pipenv run python3 scatter_plot.py <path_to_train_dataset>
 ```
 
-## Pair Plot Analysis
+### Pair Plot Analysis
 
 This tool provides a broad overview of numeric features by combining results from homogeneity and correlation analysis, and generating a Seaborn pairplot.
 
@@ -159,7 +159,93 @@ This tool provides a broad overview of numeric features by combining results fro
 **Usage**  
 
 ```bash
-python3 pair_plot.py <path_to_train_dataset>
+pipenv run python3 pair_plot.py <path_to_train_dataset>
 ```
+
+## Logistic Regression
+
+This module implements a multiclass logistic regression classifier from scratch, without relying on machine learning libraries.
+Its purpose is to predict the Hogwarts house of each student based on three numerical features.
+
+The system is composed of two main scripts:
+
+- logreg_train.py — trains a one-vs-all multi-class logistic regression model.
+
+- logreg_predict.py — uses the trained weights to predict houses for new data.  
+
+This module is fully self-contained and numerically stable (log-loss, sigmoid, overflow-safe exponentiation, and detailed error handling).  
+
+### Features
+
+✔️ **Training**
+
+- Standardizes all features (mean & std computed from the training set).
+
+- Trains four binary logistic models, one per house (OvA strategy).
+
+- Implements:
+
+   - gradient descent
+
+   - log-loss with eps stabilization
+
+   - convergence detection
+
+   - step-by-step cost tracking for plotting
+
+   - early stopping using min_step_size
+
+✔️ **Prediction**
+
+- Loads the weights from weights.json.
+
+- Validates JSON structure and numerical validity.
+
+- Converts input data to numeric, drops invalid rows, standardizes features.
+
+- Computes predictions safely using overflow-protected sigmoid.
+
+- Selects the class with maximum probability.
+
+✔️ **Evaluation** (optional)
+
+- When --test is used, the prediction script compares your manual implementation with:
+
+- **scikit-learn** LogisticRegression
+
+- automatic scaling
+
+- accuracy evaluation per house
+
+- discrepancy detection between both models
+
+**Outputs are saved as**:
+
+- weights.json - parameters from training
+
+- houses.csv — predictions
+
+- compare.csv — comparison with sklearn model
+
+### **Training the Model**  
+
+Run the training script:
+
+```bash
+pipenv run python3 logreg_train.py <path_to_train_dataset>
+```
+
+| Parameter                  | Default | Purpose                  |
+| -------------------------- | ------- | ------------------------ |
+| `--max_steps` / `-ms`      | 15000   | Maximum GD iterations    |
+| `--min_step_size` / `-mss` | 0.00005 | Early stopping threshold |
+| `--lr`                     | 0.01    | Learning rate            |
+
+Example:  
+
+```bash
+pipenv run python logreg_train.py <path_to_train_dataset> --lr 0.005 -ms 20000
+```
+
 
 
